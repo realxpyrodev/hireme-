@@ -1,0 +1,33 @@
+command /tpa <player>:
+    trigger:
+        if arg-1 is not online:
+            send "&cPlayer is not online!"
+            stop
+        set {_target} to arg-1
+        set {_sender} to player
+        send "&7You sent a &dTPA request &7to &b%arg-1%&7."
+        send "&7They have 60 seconds to accept."
+        send "&d%player% &7has sent you a &dTPA request&7. Type &a/tpaccept &7to accept." to {_target}
+        set {_tpa.request::%{_target}%} to {_sender}
+        wait 60 seconds
+        delete {_tpa.request::%{_target}%}
+
+command /tpaccept:
+    trigger:
+        if {_tpa.request::%player%} is set:
+            set {_sender} to {_tpa.request::%player%}
+            if {_sender} is not online:
+                send "&cPlayer is no longer online."
+                stop
+            send "&aYou accepted the TPA request from %{_sender}%!"
+            send "&aYour request was accepted. Do not move for 5 seconds..." to {_sender}
+            set {_loc} to location of {_sender}
+            wait 5 seconds
+            if distance between {_loc} and location of {_sender} > 0.2:
+                send "&cTeleport cancelled due to movement." to {_sender}
+                stop
+            teleport {_sender} to player
+            send "&aTeleported to %{player}%!" to {_sender}
+            delete {_tpa.request::%player%}
+        else:
+            send "&cNo pending TPA request."
