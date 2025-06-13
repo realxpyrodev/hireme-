@@ -1,0 +1,33 @@
+command /setspawn:
+    permission: spawn.set
+    trigger:
+        set {spawn_location} to location of player
+        send "&aSpawn location set to your current position."
+
+command /spawn:
+    cooldown: 10 seconds
+    trigger:
+        if {teleporting::%player%} is set:
+            send "&cYou're already teleporting!"
+            stop
+
+        if {spawn_location} is not set:
+            send "&cSpawn is not set!"
+            stop
+
+        set {teleporting::%player%} to true
+        send action bar "&eTeleporting to spawn in &c5 seconds..."
+        send title "&fTeleporting..." with subtitle "&7Don't move!" for 10 ticks
+
+        set {oldloc::%player%} to location of player
+
+        wait 5 seconds
+
+        if distance between location of player and {oldloc::%player%} > 0.5:
+            send "&cTeleport cancelled because you moved!"
+            delete {teleporting::%player%}
+            stop
+
+        teleport player to {spawn_location}
+        send "&aYou've been teleported to spawn!"
+        delete {teleporting::%player%}
