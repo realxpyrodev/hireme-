@@ -1,0 +1,23 @@
+options:
+  combat-time: 12
+
+on damage:
+  attacker is a player
+  victim is a player
+  set {combat::%attacker%} to now
+  set {combat::%victim%} to now
+  send "&cYou are now in combat! Do not log out!" to attacker
+  send "&cYou are now in combat! Do not log out!" to victim
+
+every 0.1 seconds:
+  loop all players:
+    if {combat::%loop-player%} is set:
+      if difference between now and {combat::%loop-player%} < {@combat-time} seconds:
+        send "&c⚔ You are in combat. Do NOT log out!" to loop-player
+      else:
+        delete {combat::%loop-player%}
+
+on quit:
+  if {combat::%player%} is set:
+    broadcast "&c%player% has logged out during combat!"
+    delete {combat::%player%}
